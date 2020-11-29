@@ -15,8 +15,7 @@
   },
   "lint-staged": {
     "*.{re,rei}": [
-      "npm format",
-      "git add"
+      "npm format"
     ]
   },
   "main": "Result.bs.js",
