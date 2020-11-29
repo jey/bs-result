@@ -18,22 +18,22 @@ let isError = x =>
   | Ok(_) => false
   }
 
-let map = (fn, result) =>
+let map = (result, fn) =>
   switch result {
   | Error(bad) => Error(bad)
-  | Ok(good) => good |> fn |> return
+  | Ok(good) => good->fn->return
   }
 
-let fold = (ok, error, result) =>
+let fold = (result, ok, error) =>
   switch result {
   | Error(bad) => error(bad)
   | Ok(good) => ok(good)
   }
 
-let bimap = (fnOk, fnError, result) =>
+let bimap = (result, fnOk, fnError) =>
   switch result {
-  | Error(bad) => bad |> fnError |> error
-  | Ok(good) => good |> fnOk |> return
+  | Error(bad) => bad->fnError->error
+  | Ok(good) => good->fnOk->return
   }
 
 let toOption = x =>
@@ -42,10 +42,10 @@ let toOption = x =>
   | Ok(good) => Some(good)
   }
 
-let fromOption = (errFn, option) =>
+let fromOption = (option, errFn) =>
   switch option {
-  | None => errFn() |> error
-  | Some(v) => v |> return
+  | None => errFn()->error
+  | Some(v) => v->return
   }
 
 let swap = x =>
@@ -54,45 +54,45 @@ let swap = x =>
   | Error(bad) => return(bad)
   }
 
-let flatMap = (fn, result) =>
+let flatMap = (result, fn) =>
   switch result {
   | Ok(good) => fn(good)
   | Error(bad) => Error(bad)
   }
 
-let flatMap2 = (fn, fst, snd) => fst |> flatMap(x => snd |> flatMap(y => fn(x, y)))
+let flatMap2 = (fst, snd, fn) => fst->flatMap(x => snd->flatMap(y => fn(x, y)))
 
-let flatMap3 = (fn, a, b, c) => a |> flatMap(x => b |> flatMap(y => c |> flatMap(z => fn(x, y, z))))
+let flatMap3 = (a, b, c, fn) => a->flatMap(x => b->flatMap(y => c->flatMap(z => fn(x, y, z))))
 
-let map2 = (fn, fst, snd) => fst |> flatMap(x => snd |> map(y => fn(x, y)))
+let map2 = (fst, snd, fn) => fst->flatMap(x => snd->map(y => fn(x, y)))
 
-let map3 = (fn, a, b, c) => a |> flatMap(x => b |> flatMap(y => c |> map(z => fn(x, y, z))))
+let map3 = (a, b, c, fn) => a->flatMap(x => b->flatMap(y => c->map(z => fn(x, y, z))))
 
-let ap = (result, fResult) =>
+let ap = (fResult, result) =>
   switch result {
   | Error(bad) => Error(bad)
-  | Ok(v) => map(f => f(v), fResult)
+  | Ok(v) => fResult->map(f => f(v))
   }
 
-let forAll = (fn, result) =>
+let forAll = (result, fn) =>
   switch result {
   | Error(_) => true
   | Ok(good) => fn(good)
   }
 
-let forEach = (fn, result) =>
+let forEach = (result, fn) =>
   switch result {
   | Error(_) => ()
   | Ok(good) => fn(good)
   }
 
-let getOrElse = (default, result) =>
+let getOrElse = (result, default) =>
   switch result {
   | Error(_) => default
   | Ok(good) => good
   }
 
-let getOrElseThunk = (fn, result) =>
+let getOrElseThunk = (result, fn) =>
   switch result {
   | Error(bad) => fn(bad)
   | Ok(good) => good

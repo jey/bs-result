@@ -8,9 +8,9 @@
  * ```reason
  * let r =
  *   Result.return(10)
- *   |> Result.map(x => x + 10)
- *   |> Result.flatMap(x => Result.return(x + 2))
- *   |> Result.getOrElse(-1);
+ *   -> Result.map(x => x + 10)
+ *   -> Result.flatMap(x => Result.return(x + 2))
+ *   -> Result.getOrElse(-1);
  * Js.log2(\"Result: \", r);
  * ```
  * ## Functor
@@ -99,7 +99,7 @@ let isError: Belt.Result.t<'a, 'b> => bool
  * ```re
  * let f = x => x + 1;
  * let x = 2;
- * let a = Result.ap(Result.return(x), Result.return(f));
+ * let a = Result.return(f) -> Result.ap(Result.return(x));
  * let b = Result.return(f(x));
  * Js.log2(\"Should be true\", a == b);
  * ```
@@ -107,13 +107,13 @@ let isError: Belt.Result.t<'a, 'b> => bool
  * ```reason
  * let u = x => x + 1;
  * let y = 1;
- * let a = Result.ap(Result.return(y), Result.return(u));
- * let b = Result.ap(Result.return(u), Result.return(f => f(y)));
+ * let a = Result.ap(Result.return(u), Result.return(y));
+ * let b = Result.ap(Result.return(f => f(y)), Result.return(u));
  * Js.log2(\"Should be true\", a == b);
  * ```
  "
 )
-let ap: (Belt.Result.t<'a, 'b>, Belt.Result.t<'a => 'c, 'b>) => Belt.Result.t<'c, 'b>
+let ap: (Belt.Result.t<'a => 'c, 'b>, Belt.Result.t<'a, 'b>) => Belt.Result.t<'c, 'b>
 
 @ocaml.doc(
   "
@@ -128,13 +128,13 @@ let ap: (Belt.Result.t<'a, 'b>, Belt.Result.t<'a => 'c, 'b>) => Belt.Result.t<'c
  * ```reason
  * let f = x => x + 1;
  * let g = x => x + 2;
- * let a = Result.map(x => f(g(x)), Result.return(0));
- * let b = Result.map(f, Result.map(g, Result.return(0)));
+ * let a = Result.return(0) -> Result.map(x => f(g(x)));
+ * let b = Result.return(0) -> Result.map(g) -> Result.map(f);
  * Js.log2(\"Should be true\", a == b);
  * ```
  "
 )
-let map: ('a => 'b, Belt.Result.t<'a, 'c>) => Belt.Result.t<'b, 'c>
+let map: (Belt.Result.t<'a, 'c>, 'a => 'b) => Belt.Result.t<'b, 'c>
 
 @ocaml.doc(
   "
@@ -142,7 +142,7 @@ let map: ('a => 'b, Belt.Result.t<'a, 'c>) => Belt.Result.t<'b, 'c>
  * contents of those results to a function with an arity of 2.
  "
 )
-let map2: (('a, 'b) => 'c, Belt.Result.t<'a, 'd>, Belt.Result.t<'b, 'd>) => Belt.Result.t<'c, 'd>
+let map2: (Belt.Result.t<'a, 'd>, Belt.Result.t<'b, 'd>, ('a, 'b) => 'c) => Belt.Result.t<'c, 'd>
 
 @ocaml.doc(
   "
@@ -151,13 +151,13 @@ let map2: (('a, 'b) => 'c, Belt.Result.t<'a, 'd>, Belt.Result.t<'b, 'd>) => Belt
  "
 )
 let map3: (
-  ('a, 'b, 'c) => 'd,
   Belt.Result.t<'a, 'e>,
   Belt.Result.t<'b, 'e>,
   Belt.Result.t<'c, 'e>,
+  ('a, 'b, 'c) => 'd,
 ) => Belt.Result.t<'d, 'e>
 
-let fold: ('a => 'c, 'b => 'c, Belt.Result.t<'a, 'b>) => 'c
+let fold: (Belt.Result.t<'a, 'b>, 'a => 'c, 'b => 'c) => 'c
 
 @ocaml.doc(
   "
@@ -168,8 +168,8 @@ let fold: ('a => 'c, 'b => 'c, Belt.Result.t<'a, 'b>) => 'c
  * ```reason
  * let a = Result.return(42);
  * let b = Result.error(\"boom!\");
- * let a1 = Result.bimap(a => a, b => b, a);
- * let b1 = Result.bimap(a => a, b => b, b);
+ * let a1 = a -> Result.bimap(a => a, b => b);
+ * let b1 = b -> Result.bimap(a => a, b => b);
  * Js.log3(\"Both should be true\", a == a1, b == b1);
  * ```
  * 2. Composition
@@ -180,15 +180,15 @@ let fold: ('a => 'c, 'b => 'c, Belt.Result.t<'a, 'b>) => 'c
  * let i = x => x + 4;
  * let a = 42;
  * let b = 24;
- * let ok1 = Result.bimap(a => f(g(a)), b => h(i(b)), Result.return(a));
- * let ok2 = Result.bimap(g, i, Result.bimap(f, h, Result.return(a)));
- * let err1 = Result.bimap(a => f(g(a)), b => h(i(b)), Result.error(b));
- * let err2 = Result.bimap(g, i, Result.bimap(f, h, Result.error(b)));
+ * let ok1 = Result.return(a) -> Result.bimap(a => f(g(a)), b => h(i(b)));
+ * let ok2 = Result.return(a) -> Result.bimap(f, h) -> Result.bimap(g, i);
+ * let err1 = Result.error(b) -> Result.bimap(a => f(g(a)), b => h(i(b)));
+ * let err2 = Result.error(b) -> Result.bimap(f, h) -> Result.bimap(g, i);
  * Js.log3(\"Both should be true\", ok1 == ok2, err1 == err2);
  * ```
  "
 )
-let bimap: ('a => 'c, 'b => 'd, Belt.Result.t<'a, 'b>) => Belt.Result.t<'c, 'd>
+let bimap: (Belt.Result.t<'a, 'b>, 'a => 'c, 'b => 'd) => Belt.Result.t<'c, 'd>
 
 @ocaml.doc(
   "
@@ -205,7 +205,7 @@ let toOption: Belt.Result.t<'a, 'b> => option<'a>
  * an `Error('b)` if the input is a `Belt.Option.None`.
  "
 )
-let fromOption: (unit => 'b, option<'a>) => Belt.Result.t<'a, 'b>
+let fromOption: (option<'a>, unit => 'b) => Belt.Result.t<'a, 'b>
 
 let swap: Belt.Result.t<'a, 'b> => Belt.Result.t<'b, 'a>
 
@@ -218,18 +218,18 @@ let swap: Belt.Result.t<'a, 'b> => Belt.Result.t<'b, 'a>
  * ```reason
  * let f = x => Result.return(x + 1);
  * let a = 42;
- * let x = Result.flatMap(f, Result.return(a));
+ * let x = Result.return(a) -> Result.flatMap(f);
  * Js.log2(\"Should be true\", x == f(a));
  * ```
  * 2. Right identity
  * ```reason
  * let a = Result.return(42);
- * let x = Result.flatMap(Result.return, a);
+ * let x = a -> Result.flatMap(Result.return);
  * Js.log2(\"Should be true\", a == x);
  * ```
  "
 )
-let flatMap: ('a => Belt.Result.t<'b, 'c>, Belt.Result.t<'a, 'c>) => Belt.Result.t<'b, 'c>
+let flatMap: (Belt.Result.t<'a, 'c>, 'a => Belt.Result.t<'b, 'c>) => Belt.Result.t<'b, 'c>
 
 @ocaml.doc(
   "
@@ -238,9 +238,9 @@ let flatMap: ('a => Belt.Result.t<'b, 'c>, Belt.Result.t<'a, 'c>) => Belt.Result
  "
 )
 let flatMap2: (
-  ('a, 'b) => Belt.Result.t<'c, 'd>,
   Belt.Result.t<'a, 'd>,
   Belt.Result.t<'b, 'd>,
+  ('a, 'b) => Belt.Result.t<'c, 'd>,
 ) => Belt.Result.t<'c, 'd>
 
 @ocaml.doc(
@@ -250,18 +250,18 @@ let flatMap2: (
  "
 )
 let flatMap3: (
-  ('a, 'b, 'c) => Belt.Result.t<'d, 'e>,
   Belt.Result.t<'a, 'e>,
   Belt.Result.t<'b, 'e>,
   Belt.Result.t<'c, 'e>,
+  ('a, 'b, 'c) => Belt.Result.t<'d, 'e>,
 ) => Belt.Result.t<'d, 'e>
 
-let forAll: ('a => bool, Belt.Result.t<'a, 'b>) => bool
+let forAll: (Belt.Result.t<'a, 'b>, 'a => bool) => bool
 
-let forEach: ('a => unit, Belt.Result.t<'a, 'b>) => unit
+let forEach: (Belt.Result.t<'a, 'b>, 'a => unit) => unit
 
-let getOrElse: ('a, Belt.Result.t<'a, 'b>) => 'a
+let getOrElse: (Belt.Result.t<'a, 'b>, 'a) => 'a
 
-let getOrElseThunk: ('b => 'a, Belt.Result.t<'a, 'b>) => 'a
+let getOrElseThunk: (Belt.Result.t<'a, 'b>, 'b => 'a) => 'a
 
 let unsafeGet: Belt.Result.t<'a, exn> => 'a

@@ -16,44 +16,44 @@ let isError = promise => promise |> Js.Promise.then_(x =>
     } |> Js.Promise.resolve
   )
 
-let map = (fn, promise) => promise |> Js.Promise.then_(result =>
+let map = (promise, fn) => promise |> Js.Promise.then_(result =>
     switch result {
-    | Belt.Result.Ok(v) => fn(v) |> return
-    | Belt.Result.Error(e) => e |> error
+    | Belt.Result.Ok(v) => fn(v)->return
+    | Belt.Result.Error(e) => e->error
     }
   )
 
-let fold = (ok, error, promise) => promise |> Js.Promise.then_(result =>
+let fold = (promise, ok, error) => promise |> Js.Promise.then_(result =>
     switch result {
     | Belt.Result.Ok(v) => ok(v)
     | Belt.Result.Error(e) => error(e)
     }
   )
 
-let bimap = (fnOk, fnError, promise) => promise |> Js.Promise.then_(result =>
+let bimap = (promise, fnOk, fnError) => promise |> Js.Promise.then_(result =>
     switch result {
-    | Belt.Result.Ok(v) => fnOk(v) |> return
-    | Belt.Result.Error(e) => fnError(e) |> error
+    | Belt.Result.Ok(v) => fnOk(v)->return
+    | Belt.Result.Error(e) => fnError(e)->error
     }
   )
 
-let andThen = (fn, promise) => promise |> Js.Promise.then_(x =>
+let andThen = (promise, fn) => promise |> Js.Promise.then_(x =>
     switch x {
     | Belt.Result.Error(e) => error(e)
     | Belt.Result.Ok(v) => fn(v)
     }
   )
 
-let flatMap = (fn, promise) => promise |> Js.Promise.then_(result =>
+let flatMap = (promise, fn) => promise |> Js.Promise.then_(result =>
     switch result {
-    | Belt.Result.Ok(v) => fn(v) |> Js.Promise.resolve
+    | Belt.Result.Ok(v) => fn(v)->Js.Promise.resolve
     | Belt.Result.Error(e) => error(e)
     }
   )
 
-let ap = (pResult, pfResult) => pfResult |> Js.Promise.then_(fResult =>
+let ap = (pfResult, pResult) => pfResult |> Js.Promise.then_(fResult =>
     switch fResult {
-    | Belt.Result.Ok(fn) => map(fn, pResult)
+    | Belt.Result.Ok(fn) => pResult->map(fn)
     | Belt.Result.Error(e) => error(e)
     }
   )
@@ -65,6 +65,6 @@ let unsafeResolve = promise => promise |> Js.Promise.then_(result =>
     }
   )
 
-let unsafeMapResolve = (fn, promise) => promise |> map(fn) |> unsafeResolve
+let unsafeMapResolve = (promise, fn) => promise->map(fn)->unsafeResolve
 
-let unsafeFlatMapResolve = (fn, promise) => promise |> flatMap(fn) |> unsafeResolve
+let unsafeFlatMapResolve = (promise, fn) => promise->flatMap(fn)->unsafeResolve
