@@ -7,7 +7,7 @@
     "watch": "bsb -make-world -w",
     "clean": "bsb -clean-world",
     "coverage": "nyc report --temp-directory=coverage --reporter=text-lcov | coveralls",
-    "format": "bsrefmt --in-place src/*.re* __tests__/*.re*",
+    "format": "./reformat.sh",
     "precommit": "lint-staged",
     "testOnly": "npm run clean && npm run build && jest --coverage",
     "test": "npm run testOnly; npm run coverage",
