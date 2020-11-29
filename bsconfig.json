@@ -1,6 +1,6 @@
 {
     "name": "bs-result",
-    "version": "2.3.0",
+    "version": "3.0.0-alpha",
     "package-specs": {
         "module": "commonjs",
         "in-source": true
