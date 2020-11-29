@@ -465,9 +465,9 @@ describe("Result.Promise based utilities", () => {
     |> Result.Promise.unsafeResolve
     |> Js.Promise.then_(_ => fail("should not be possible") |> Js.Promise.resolve)
     |> Js.Promise.catch(error =>
-      Js.String.make(error)
+      Js.Json.stringifyAny(error)
       |> Expect.expect
-      |> Expect.toEqual("ResultTest.UnsafeGetFailure,4,boom")
+      |> Expect.toEqual(Some("{\"RE_EXN_ID\":\"ResultTest.UnsafeGetFailure/4\",\"_1\":\"boom\"}"))
       |> Js.Promise.resolve
     )
   )
