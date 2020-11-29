@@ -1,5 +1,7 @@
 open Belt.Result
 
+type t<'a, 'b> = Belt.Result.t<'a, 'b>
+
 module Promise = Result_promise
 
 let return = x => Ok(x)

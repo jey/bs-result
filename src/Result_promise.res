@@ -1,3 +1,5 @@
+type t<'a, 'b> = Js.Promise.t<Belt.Result.t<'a, 'b>>
+
 let return = x => Belt.Result.Ok(x) |> Js.Promise.resolve
 
 let error = x => Belt.Result.Error(x) |> Js.Promise.resolve

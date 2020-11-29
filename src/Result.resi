@@ -54,6 +54,8 @@
  "
 )
 
+type t<'a, 'b> = Belt.Result.t<'a, 'b>
+
 module Promise = Result_promise
 
 @ocaml.doc(

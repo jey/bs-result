@@ -7,6 +7,7 @@
    * [js-promise]: https://bucklescript.github.io/bucklescript/api/Js.Promise.html
    "
 )
+type t<'a, 'b> = Js.Promise.t<Belt.Result.t<'a, 'b>>
 let return: 'a => Js.Promise.t<Belt.Result.t<'a, 'b>>
 let error: 'a => Js.Promise.t<Belt.Result.t<'b, 'a>>
 let isOk: Js.Promise.t<Belt.Result.t<'a, 'b>> => Js.Promise.t<bool>
