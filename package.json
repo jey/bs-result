@@ -4,6 +4,7 @@
   "description": "A Result type implementation for ReasonML",
   "scripts": {
     "build": "bsb -make-world",
+    "watch": "bsb -make-world -w",
     "clean": "bsb -clean-world",
     "coverage": "nyc report --temp-directory=coverage --reporter=text-lcov | coveralls",
     "format": "bsrefmt --in-place src/*.re* __tests__/*.re*",
