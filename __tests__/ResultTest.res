@@ -5,17 +5,17 @@ exception UnsafeGetFailure(string)
 describe("Basic Result Utilities", () => {
   test("return", () => {
     let actual = Result.return(1)
-    let expected = Belt.Result.Ok(1)
+    let expected = Ok(1)
     Expect.expect(actual) |> Expect.toEqual(expected)
   })
   test("return", () => {
     let actual = Result.return(1)
-    let expected = Belt.Result.Ok(1)
+    let expected = Ok(1)
     Expect.expect(actual) |> Expect.toEqual(expected)
   })
   test("error", () => {
     let actual = Result.error("boom")
-    let expected = Belt.Result.Error("boom")
+    let expected = Error("boom")
     Expect.expect(actual) |> Expect.toEqual(expected)
   })
   test("isOk", () => {
