@@ -249,6 +249,21 @@ describe("Basic Result Utilities", () => {
     let expected = Result.error(18)
     Expect.expect(actual) |> Expect.toEqual(expected)
   })
+  test("flatMapError - Ok", () => {
+    let actual = Result.return(1)->Result.flatMapError(x => Result.return(x + 1))
+    let expected = Result.return(1)
+    Expect.expect(actual) |> Expect.toEqual(expected)
+  })
+  test("flatMapError - Error to Ok", () => {
+    let actual = Result.error(1)->Result.flatMapError(x => Result.return(x + 1))
+    let expected = Result.return(2)
+    Expect.expect(actual) |> Expect.toEqual(expected)
+  })
+  test("flatMapError - Error to Error", () => {
+    let actual = Result.error(1)->Result.flatMapError(x => Result.error(j`boom $x`))
+    let expected = Result.error("boom 1")
+    Expect.expect(actual) |> Expect.toEqual(expected)
+  })
   test("forAll - Ok (true)", () => {
     let actual = Result.return(1)->Result.forAll(x => x == 1)
     let expected = true
@@ -450,6 +465,24 @@ describe("Result.Promise based utilities", () => {
     Result.Promise.error("boom")->Result.Promise.flatMap(x => Result.return(x + 1))
       |> Js.Promise.then_(actual =>
         Expect.expect(actual) |> Expect.toEqual(Result.error("boom")) |> Js.Promise.resolve
+      )
+  )
+  testPromise("flatMapError - Ok", () =>
+    Result.Promise.return(42)->Result.Promise.flatMapError(x => Result.return(x + 1))
+      |> Js.Promise.then_(actual =>
+        Expect.expect(actual) |> Expect.toEqual(Result.return(42)) |> Js.Promise.resolve
+      )
+  )
+  testPromise("flatMapError - Error to Ok", () =>
+    Result.Promise.error(42)->Result.Promise.flatMapError(x => Result.return(x + 1))
+      |> Js.Promise.then_(actual =>
+        Expect.expect(actual) |> Expect.toEqual(Result.return(43)) |> Js.Promise.resolve
+      )
+  )
+  testPromise("flatMapError - Error", () =>
+    Result.Promise.error(42)->Result.Promise.flatMapError(x => Result.error(j`boom $x`))
+      |> Js.Promise.then_(actual =>
+        Expect.expect(actual) |> Expect.toEqual(Result.error("boom 42")) |> Js.Promise.resolve
       )
   )
   testPromise("unsafeResolve - Ok", () =>

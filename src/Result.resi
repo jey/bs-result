@@ -235,6 +235,8 @@ let swap: Belt.Result.t<'a, 'b> => Belt.Result.t<'b, 'a>
 )
 let flatMap: (Belt.Result.t<'a, 'c>, 'a => Belt.Result.t<'b, 'c>) => Belt.Result.t<'b, 'c>
 
+let flatMapError: (Belt.Result.t<'a, 'b>, 'b => Belt.Result.t<'a, 'c>) => Belt.Result.t<'a, 'c>
+
 @ocaml.doc(
   "
  * `flatMap2` provides the Monad compatible flatMap over 2 results and passes

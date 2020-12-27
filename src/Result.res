@@ -68,6 +68,12 @@ let flatMap = (result, fn) =>
   | Error(bad) => Error(bad)
   }
 
+let flatMapError = (result, fn) =>
+  switch result {
+  | Ok(good) => Ok(good)
+  | Error(bad) => fn(bad)
+  }
+
 let flatMap2 = (fst, snd, fn) => fst->flatMap(x => snd->flatMap(y => fn(x, y)))
 
 let flatMap3 = (a, b, c, fn) => a->flatMap(x => b->flatMap(y => c->flatMap(z => fn(x, y, z))))

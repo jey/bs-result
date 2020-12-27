@@ -36,6 +36,10 @@ let flatMap: (
   Js.Promise.t<Belt.Result.t<'a, 'c>>,
   'a => Belt.Result.t<'b, 'c>,
 ) => Js.Promise.t<Belt.Result.t<'b, 'c>>
+let flatMapError: (
+  Js.Promise.t<Belt.Result.t<'a, 'b>>,
+  'b => Belt.Result.t<'a, 'c>,
+) => Js.Promise.t<Belt.Result.t<'a, 'c>>
 let unsafeResolve: Js.Promise.t<Belt.Result.t<'a, exn>> => Js.Promise.t<'a>
 let unsafeMapResolve: (Js.Promise.t<Belt.Result.t<'a, exn>>, 'a => 'b) => Js.Promise.t<'b>
 let unsafeFlatMapResolve: (

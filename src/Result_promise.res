@@ -60,6 +60,13 @@ let flatMap = (promise, fn) => promise |> Js.Promise.then_(result =>
     }
   )
 
+let flatMapError = (promise, fn) => promise |> Js.Promise.then_(result =>
+    switch result {
+    | Ok(v) => return(v)
+    | Error(e) => fn(e)->Js.Promise.resolve
+    }
+  )
+
 let ap = (pfResult, pResult) => pfResult |> Js.Promise.then_(fResult =>
     switch fResult {
     | Ok(fn) => pResult->map(fn)
