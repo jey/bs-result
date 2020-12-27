@@ -41,3 +41,4 @@ let unsafeFlatMapResolve: (
   Js.Promise.t<Belt.Result.t<'a, exn>>,
   'a => Belt.Result.t<'b, exn>,
 ) => Js.Promise.t<'b>
+let resolveAll: Js.Promise.t<array<Belt.Result.t<'ok, 'err>>> => t<array<'ok>, array<'err>>

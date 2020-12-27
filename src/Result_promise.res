@@ -70,3 +70,20 @@ let unsafeResolve = promise => promise |> Js.Promise.then_(result =>
 let unsafeMapResolve = (promise, fn) => promise->map(fn)->unsafeResolve
 
 let unsafeFlatMapResolve = (promise, fn) => promise->flatMap(fn)->unsafeResolve
+
+let resolveAll = (promise: Js.Promise.t<array<result<'ok, 'err>>>): t<array<'ok>, array<'err>> => {
+  promise |> Js.Promise.then_(results => results->Js.Array2.reduce((a, v) =>
+      switch (a, v) {
+      | (Ok(arr), Ok(x)) => {
+          let _ = arr->Js.Array2.push(x)
+          Ok(arr)
+        }
+      | (Ok(_), Error(e)) => Error([e])
+      | (Error(arr), Ok(_)) => Error(arr)
+      | (Error(arr), Error(e)) => {
+          let _ = arr->Js.Array2.push(e)
+          Error(arr)
+        }
+      }
+    , Ok([])) |> Js.Promise.resolve)
+}

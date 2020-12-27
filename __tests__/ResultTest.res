@@ -463,4 +463,29 @@ describe("Result.Promise based utilities", () => {
         Expect.expect(result) |> Expect.toEqual(expected) |> Js.Promise.resolve
       )
   })
+  testPromise("resolveAll - Ok", () => {
+    let input = [1, 2, 3, 4]
+    let expected = Ok([2, 4, 6, 8])
+    input
+    ->Js.Array2.map(x => Result.Promise.return(x * 2))
+    ->Js.Promise.all
+    ->Result.Promise.resolveAll
+      |> Js.Promise.then_(result =>
+        Expect.expect(result) |> Expect.toEqual(expected) |> Js.Promise.resolve
+      )
+  })
+  testPromise("resolveAll - Error", () => {
+    let input = [1, 2, 3, 4]
+    let expected = Error([10, 30])
+    input->Js.Array2.map(x =>
+      if mod(x, 2) == 0 {
+        Result.Promise.return(x * 2)
+      } else {
+        Result.Promise.error(x * 10)
+      }
+    )->Js.Promise.all->Result.Promise.resolveAll
+      |> Js.Promise.then_(result =>
+        Expect.expect(result) |> Expect.toEqual(expected) |> Js.Promise.resolve
+      )
+  })
 })
