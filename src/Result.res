@@ -26,6 +26,12 @@ let map = (result, fn) =>
   | Ok(good) => good->fn->return
   }
 
+let mapError = (result, fn) =>
+  switch result {
+  | Ok(v) => v->return
+  | Error(e) => fn(e)->error
+  }
+
 let fold = (result, ok, error) =>
   switch result {
   | Error(bad) => error(bad)

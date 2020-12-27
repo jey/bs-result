@@ -138,6 +138,8 @@ let ap: (Belt.Result.t<'a => 'c, 'b>, Belt.Result.t<'a, 'b>) => Belt.Result.t<'c
 )
 let map: (Belt.Result.t<'a, 'c>, 'a => 'b) => Belt.Result.t<'b, 'c>
 
+let mapError: (Belt.Result.t<'a, 'b>, 'b => 'c) => Belt.Result.t<'a, 'c>
+
 @ocaml.doc(
   "
  * `map2` provides the Functor compatible map over 2 results and passes the

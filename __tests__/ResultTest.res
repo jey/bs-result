@@ -76,6 +76,16 @@ describe("Basic Result Utilities", () => {
     let expected = Result.error(1)
     Expect.expect(actual) |> Expect.toEqual(expected)
   })
+  test("mapError - Ok", () => {
+    let actual = Result.return(1)->Result.mapError(x => x + 1)
+    let expected = Result.return(1)
+    Expect.expect(actual) |> Expect.toEqual(expected)
+  })
+  test("mapError - Error", () => {
+    let actual = Result.error(1)->Result.mapError(x => x + 1)
+    let expected = Result.error(2)
+    Expect.expect(actual) |> Expect.toEqual(expected)
+  })
   test("map2 - Ok", () => {
     let actual = Result.map2(Result.return(1), Result.return(2), (x, y) => x + y)
     let expected = Result.return(3)
@@ -374,6 +384,18 @@ describe("Result.Promise based utilities", () => {
     Result.Promise.error("boom")->Result.Promise.map(x => x + 1)
       |> Js.Promise.then_(actual =>
         Expect.expect(actual) |> Expect.toEqual(Result.error("boom")) |> Js.Promise.resolve
+      )
+  )
+  testPromise("mapError - Ok", () =>
+    Result.Promise.return(42)->Result.Promise.mapError(x => x + 1)
+      |> Js.Promise.then_(actual =>
+        Expect.expect(actual) |> Expect.toEqual(Result.return(42)) |> Js.Promise.resolve
+      )
+  )
+  testPromise("mapError - Error", () =>
+    Result.Promise.error(42)->Result.Promise.mapError(x => x + 1)
+      |> Js.Promise.then_(actual =>
+        Expect.expect(actual) |> Expect.toEqual(Result.error(43)) |> Js.Promise.resolve
       )
   )
   testPromise("fold - Ok", () =>

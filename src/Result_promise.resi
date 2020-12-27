@@ -17,6 +17,7 @@ let ap: (
   Js.Promise.t<Belt.Result.t<'a, 'b>>,
 ) => Js.Promise.t<Belt.Result.t<'c, 'b>>
 let map: (Js.Promise.t<Belt.Result.t<'a, 'c>>, 'a => 'b) => Js.Promise.t<Belt.Result.t<'b, 'c>>
+let mapError: (Js.Promise.t<Belt.Result.t<'a, 'b>>, 'b => 'c) => Js.Promise.t<Belt.Result.t<'a, 'c>>
 let fold: (
   Js.Promise.t<Belt.Result.t<'a, 'b>>,
   'a => Js.Promise.t<'c>,

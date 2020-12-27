@@ -25,6 +25,13 @@ let map = (promise, fn) => promise |> Js.Promise.then_(result =>
     }
   )
 
+let mapError = (promise, fn) => promise |> Js.Promise.then_(result =>
+    switch result {
+    | Ok(v) => v->return
+    | Error(e) => fn(e)->error
+    }
+  )
+
 let fold = (promise, ok, error) => promise |> Js.Promise.then_(result =>
     switch result {
     | Ok(v) => ok(v)
